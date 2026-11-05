@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Your Live K Opening Night Pass</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0b0a08">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
+<style>
+  /* Layout: a single pass card (white stub on black) with the QR and the 4-letter code as the two things the door needs. */
+  :root {
+    --bg: #0b0a08; --bg-2: #15130f; --bg-3: #1d1a15;
+    --fg: #f3ede0; --muted: #a99f8b; --line: rgba(212, 175, 55, .28);
+    --gold: #d4af37; --gold-2: #f3d97a; --gold-deep: #9a7b1f;
+    --paper: #fbf8f0; --ink: #141210; --ink-2: #5d5747;
+    --ok: #4ccd8a; --danger: #ef6c57;
+    --display: 'Bodoni Moda', 'Didot', Georgia, serif;
+    --body: 'Hanken Grotesk', 'Helvetica Neue', Arial, system-ui, sans-serif;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 17px; line-height: 1.5; -webkit-font-smoothing: antialiased;
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: env(safe-area-inset-top, 0px) max(24px, env(safe-area-inset-bottom, 0px));
+  }
+  .page { max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+  .top { display: flex; align-items: center; justify-content: space-between; padding-top: 18px; }
+  .wordmark { font-family: var(--display); font-weight: 800; letter-spacing: .14em; font-size: 15px; color: var(--gold); text-transform: uppercase; }
+  .lang { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+  .lang button { appearance: none; border: 0; background: transparent; color: var(--muted); font: 600 13px/1 var(--body); padding: 8px 12px; cursor: pointer; min-width: 44px; }
+  .lang button[aria-pressed="true"] { background: var(--gold); color: #1a1405; }
+
+  .status { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 16px; }
+  .status .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 4px rgba(212,175,55,.18); flex: none; }
+  .status.ok .dot { background: var(--ok); box-shadow: 0 0 0 4px rgba(76,205,138,.18); }
+  h1 { font-family: var(--display); font-style: italic; font-weight: 600; font-size: clamp(38px, 10vw, 50px); line-height: 1; margin: 0; letter-spacing: -.01em; text-wrap: balance;
+       background: linear-gradient(100deg, var(--gold-deep), var(--gold) 30%, var(--gold-2) 55%, var(--gold) 80%, var(--gold-deep)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lede { margin: 6px 0 0; color: var(--muted); font-size: 15px; }
+
+  /* the pass */
+  .pass { background: var(--paper); color: var(--ink); border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+  .pass-head { padding: 18px 20px 14px; border-bottom: 1px dashed rgba(20,18,16,.25); display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .pass-head .ev { font-family: var(--display); font-weight: 700; font-size: 17px; letter-spacing: .02em; }
+  .pass-head .dt { font-size: 13px; color: var(--ink-2); text-align: right; line-height: 1.3; white-space: nowrap; flex: none; }
+  .pass-body { padding: 22px 20px 8px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .qr { width: min(240px, 70vw); aspect-ratio: 1; max-width: 100%; display: flex; align-items: center; justify-content: center; }
+  .qr svg { width: 100%; height: auto; display: block; }
+  .code { font-family: var(--display); font-weight: 800; font-size: 54px; letter-spacing: .18em; line-height: 1; margin-left: .18em; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .code-label { font-size: 11px; letter-spacing: .28em; text-transform: uppercase; color: var(--ink-2); margin-top: -8px; }
+  .pass-foot { padding: 16px 20px 20px; display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; align-items: end; border-top: 1px dashed rgba(20,18,16,.25); margin-top: 8px; }
+  .guest { grid-column: 1; font-size: 22px; font-weight: 700; letter-spacing: -.01em; overflow-wrap: anywhere; min-width: 0; }
+  .party { grid-column: 1; font-size: 14px; color: var(--ink-2); }
+  .party b { color: var(--ink); font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .k { font-family: var(--display); font-weight: 800; font-size: 26px; color: var(--gold-deep); grid-column: 2; grid-row: 1 / span 2; align-self: center; }
+
+  .tip { background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; font-size: 15px; color: var(--fg); }
+  .tip b { color: var(--gold-2); }
+  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .actions a, .actions button {
+    appearance: none; border: 1px solid var(--line); background: var(--bg-2); color: var(--fg); border-radius: 12px; min-height: 52px;
+    font: 600 15px/1.2 var(--body); display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; padding: 10px 12px; cursor: pointer; text-align: center;
+  }
+  .actions a:focus-visible, .actions button:focus-visible { outline: 2px solid var(--gold-2); outline-offset: 2px; }
+  .actions .wide { grid-column: 1 / -1; }
+  .where { color: var(--muted); font-size: 14px; line-height: 1.5; }
+  .where b { color: var(--fg); font-weight: 600; }
+  .change { color: var(--muted); font-size: 14px; text-align: center; }
+  .change a { color: var(--gold); text-decoration: none; }
+  .change a:hover { text-decoration: underline; }
+  .notfound { display: none; background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; padding: 20px; }
+  .notfound.show { display: block; }
+  .notfound a { color: var(--gold); }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="top">
+    <div class="wordmark">Live K</div>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" id="lang-en" aria-pressed="true">EN</button>
+      <button type="button" id="lang-zh" aria-pressed="false">中文</button>
+    </div>
+  </div>
+
+  <div id="loading" class="lede">Loading your pass…</div>
+
+  <div id="main" hidden>
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div>
+        <div class="status" id="status"><span class="dot"></span><span id="status-text">You're on the list</span></div>
+        <h1 id="headline" style="margin-top:8px">Opening Night</h1>
+        <p class="lede" id="lede">Show this at the door, or just give your name.</p>
+      </div>
+
+      <section class="pass" aria-label="Pass">
+        <div class="pass-head">
+          <div class="ev" id="ev-name">Live K Baltimore Grand Opening</div>
+          <div class="dt"><span id="ev-date">Fri, Nov 13</span><br><span id="ev-time">7:00 PM</span></div>
+        </div>
+        <div class="pass-body">
+          <div class="qr" id="qr"></div>
+          <div class="code" id="code">····</div>
+          <div class="code-label" id="code-label">Door code</div>
+        </div>
+        <div class="pass-foot">
+          <div class="guest" id="guest">—</div>
+          <div class="party"><span id="party-label">Group of</span> <b id="party">1</b></div>
+          <div class="k" aria-hidden="true">K</div>
+        </div>
+      </section>
+
+      <div class="tip" id="tip"><b>Save a screenshot</b> of this pass, or keep this link. Your code works even without signal.</div>
+
+      <div class="actions">
+        <a id="gcal" href="#" target="_blank" rel="noopener">Google Calendar</a>
+        <a id="ics" href="#" download="livek-opening-night.ics">Apple / Outlook</a>
+        <a id="maps" class="wide" href="#" target="_blank" rel="noopener">Directions</a>
+      </div>
+
+      <p class="where" id="where"><b id="w-venue">Live K Karaoke Bar · Rye Street Market</b><br><span id="w-address">301 Mission Blvd, Suite 1102, Baltimore, MD 21230</span><br><span id="w-entrance">Main entrance on Rye Street</span></p>
+
+      <p class="change" id="change">Need to change your group size? <a href="index.html">RSVP again with the same number</a> and we'll update it.</p>
+    </div>
+  </div>
+
+  <div class="notfound" id="notfound">
+    <strong id="nf-title">We couldn't find this pass.</strong><br>
+    <span id="nf-text">The link may be incomplete. You can <a href="index.html">RSVP again</a> — it only takes a moment.</span>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="lk.js"></script>
+<script>
+(function () {
+  const T = {
+    en: {
+      loading: 'Loading your pass…', onlist: "You're on the list", updated: 'Your RSVP is updated', checkedin: 'Checked in',
+      headline: 'Opening Night', lede: 'Show this at the door, or just give your name.', codeLabel: 'Door code', groupOf: 'Group of',
+      tip: '<b>Save a screenshot</b> of this pass, or keep this link. Your code works even without signal.',
+      gcal: 'Google Calendar', ics: 'Apple / Outlook', maps: 'Directions', entrance: 'Main entrance on Rye Street',
+      change: 'Need to change your group size? <a href="index.html?lang=en">RSVP again with the same number</a> and we’ll update it.',
+      nfTitle: 'We couldn’t find this pass.', nfText: 'The link may be incomplete. You can <a href="index.html?lang=en">RSVP again</a> — it only takes a moment.',
+      sharedCaption: (name) => name
+    },
+    zh: {
+      loading: '正在加载你的入场码…', onlist: '你已在名单上', updated: '报名信息已更新', checkedin: '已签到',
+      headline: '开业之夜', lede: '到场时出示此页，或直接报名字。', codeLabel: '入场码', groupOf: '人数',
+      tip: '<b>请截图保存</b>此页或保留链接。没有信号时入场码也有效。',
+      gcal: 'Google 日历', ics: 'Apple / Outlook 日历', maps: '导航', entrance: '正门在 Rye Street',
+      change: '需要修改人数？<a href="index.html?lang=zh">用同一手机号再报名一次</a>即可更新。',
+      nfTitle: '找不到这张入场码。', nfText: '链接可能不完整。你可以<a href="index.html?lang=zh">重新报名</a>，只需一分钟。'
+    }
+  };
+  const $ = (id) => document.getElementById(id);
+  const params = new URLSearchParams(location.search);
+  let lang = LK.detectLang();
+  let ticket = null;
+
+  function render() {
+    const t = T[lang];
+    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+    $('lang-en').setAttribute('aria-pressed', lang === 'en');
+    $('lang-zh').setAttribute('aria-pressed', lang === 'zh');
+    $('loading').textContent = t.loading;
+    $('nf-title').textContent = t.nfTitle; $('nf-text').innerHTML = t.nfText;
+    if (!ticket) return;
+    const ev = ticket.event;
+    const st = $('status');
+    st.classList.toggle('ok', !!ticket.checked_in_at);
+    $('status-text').textContent = ticket.checked_in_at ? (t.checkedin + ' · ' + LK.fmtClock(ticket.checked_in_at)) : (params.get('updated') ? t.updated : t.onlist);
+    $('headline').textContent = t.headline;
+    $('lede').textContent = t.lede;
+    $('ev-name').textContent = ev.name;
+    $('ev-date').textContent = new Intl.DateTimeFormat(lang === 'zh' ? 'zh-CN' : 'en-US', { timeZone: LK.CONFIG.timeZone, weekday: 'short', month: 'short', day: 'numeric' }).format(new Date(ev.starts_at));
+    $('ev-time').textContent = LK.fmtTime(ev.starts_at, lang);
+    $('code').textContent = ticket.code;
+    $('code-label').textContent = t.codeLabel;
+    $('guest').textContent = ticket.name;
+    $('party-label').textContent = t.groupOf;
+    $('party').textContent = ticket.party_size;
+    $('tip').innerHTML = t.tip;
+    $('gcal').textContent = t.gcal; $('gcal').href = LK.googleCalendarUrl(ev);
+    $('ics').textContent = t.ics;
+    try {
+      const blob = new Blob([LK.icsText(ev, ticket)], { type: 'text/calendar;charset=utf-8' });
+      $('ics').href = URL.createObjectURL(blob);
+    } catch (e) { $('ics').hidden = true; }
+    $('maps').textContent = t.maps; $('maps').href = LK.mapsUrl();
+    $('w-venue').textContent = ev.venue || ''; $('w-address').textContent = ev.address || ''; $('w-entrance').textContent = t.entrance;
+    $('change').innerHTML = t.change;
+    document.title = (lang === 'zh' ? 'Live K 入场码 · ' : 'Live K Pass · ') + ticket.code;
+  }
+
+  function drawQr(url) {
+    const box = $('qr');
+    box.innerHTML = '';
+    try {
+      const qr = window.qrcode(0, 'M');
+      qr.addData(url);
+      qr.make();
+      box.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+      const svg = box.querySelector('svg');
+      if (svg) { svg.removeAttribute('width'); svg.removeAttribute('height'); svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', 'QR code'); }
+    } catch (e) {
+      box.style.display = 'none'; // code alone is enough at the door
+    }
+  }
+
+  $('lang-en').addEventListener('click', () => { lang = 'en'; LK.saveLang(lang); render(); });
+  $('lang-zh').addEventListener('click', () => { lang = 'zh'; LK.saveLang(lang); render(); });
+
+  render();
+  const id = params.get('t');
+  if (!id) { $('loading').hidden = true; $('notfound').classList.add('show'); return; }
+  LK.rpc('evt_ticket', { p_id: id }).then((tk) => {
+    $('loading').hidden = true;
+    if (!tk) { $('notfound').classList.add('show'); return; }
+    ticket = tk;
+    $('main').hidden = false;
+    render();
+    drawQr(LK.ticketUrl(tk.id));
+    if (params.get('new') || params.get('updated')) {
+      try { history.replaceState(null, '', 'ticket.html?t=' + encodeURIComponent(tk.id)); } catch (e) {}
+    }
+  }).catch(() => {
+    $('loading').hidden = true; $('notfound').classList.add('show');
+  });
+})();
+</script>
+</body>
+</html>

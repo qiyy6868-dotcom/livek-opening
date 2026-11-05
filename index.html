@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Live K Baltimore Grand Opening</title>
+<meta name="description" content="You're invited to opening night at Live K Baltimore — Friday, November 13, 2026, 7:00 PM at Rye Street Market. RSVP to get on the list.">
+<meta property="og:title" content="Live K Baltimore · Grand Opening · Fri Nov 13, 7 PM">
+<meta property="og:description" content="You're invited to opening night. RSVP to get your group on the list.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0b0a08">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..900;1,6..96,400..900&family=Hanken+Grotesk:wght@400;500;600;700&display=swap">
+<style>
+  /* Layout: one centered column (max 560px) — invitation card on black, gold foil accents. Single dark look by design. */
+  :root {
+    --bg: #0b0a08;
+    --bg-2: #15130f;
+    --bg-3: #1d1a15;
+    --fg: #f3ede0;
+    --muted: #a99f8b;
+    --line: rgba(212, 175, 55, .28);
+    --gold: #d4af37;
+    --gold-2: #f3d97a;
+    --gold-deep: #9a7b1f;
+    --ok: #4ccd8a;
+    --danger: #ef6c57;
+    --display: 'Bodoni Moda', 'Didot', 'Playfair Display', Georgia, serif;
+    --body: 'Hanken Grotesk', 'Helvetica Neue', Arial, system-ui, sans-serif;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: env(safe-area-inset-top, 0px) max(24px, env(safe-area-inset-bottom, 0px));
+  }
+  .page { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+
+  /* top bar */
+  .top { display: flex; align-items: center; justify-content: space-between; padding-top: 18px; }
+  .wordmark { font-family: var(--display); font-weight: 800; letter-spacing: .14em; font-size: 15px; color: var(--gold); text-transform: uppercase; }
+  .lang { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+  .lang button {
+    appearance: none; border: 0; background: transparent; color: var(--muted); font: 600 13px/1 var(--body);
+    padding: 8px 12px; cursor: pointer; min-width: 44px;
+  }
+  .lang button[aria-pressed="true"] { background: var(--gold); color: #1a1405; }
+  .lang button:focus-visible { outline: 2px solid var(--gold-2); outline-offset: -2px; }
+
+  /* hero */
+  .hero { position: relative; padding: 18px 0 8px; }
+  .hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: .9; }
+  .hero > * { position: relative; }
+  .eyebrow { font-size: 12px; letter-spacing: .28em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+  h1 {
+    font-family: var(--display); font-style: italic; font-weight: 600; font-size: clamp(50px, 14vw, 76px); line-height: .98; margin: 0;
+    letter-spacing: -.01em; text-wrap: balance;
+    background: linear-gradient(100deg, var(--gold-deep) 0%, var(--gold) 28%, var(--gold-2) 50%, var(--gold) 72%, var(--gold-deep) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .lede { margin: 14px 0 0; color: var(--fg); font-size: 18px; max-width: 32ch; }
+
+  /* when / where */
+  .when { display: grid; grid-template-columns: auto 1fr; gap: 10px 18px; align-items: baseline; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 18px 0; }
+  .when dt { font-size: 12px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); padding-top: 4px; }
+  .when dd { margin: 0; }
+  .big { font-family: var(--display); font-weight: 600; font-size: 28px; line-height: 1.1; letter-spacing: -.01em; }
+  .big small { display: block; font-family: var(--body); font-weight: 500; font-size: 16px; letter-spacing: 0; color: var(--fg); margin-top: 4px; }
+  .sub { color: var(--muted); font-size: 15px; margin-top: 4px; }
+  .entrance { display: inline-block; margin-top: 8px; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--gold); border: 1px solid var(--line); border-radius: 4px; padding: 4px 8px; }
+  .going { color: var(--muted); font-size: 14px; margin: -10px 0 0; }
+  .going b { color: var(--gold-2); font-weight: 600; }
+
+  /* RSVP card */
+  .card { background: var(--bg-2); border: 1px solid var(--line); border-radius: 14px; padding: 22px 20px 20px; }
+  .card h2 { font-family: var(--display); font-weight: 600; font-size: 30px; margin: 0; letter-spacing: -.01em; }
+  .card .hint { margin: 4px 0 18px; color: var(--muted); font-size: 15px; }
+  form { display: flex; flex-direction: column; gap: 16px; }
+  label { display: block; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  label .opt { text-transform: none; letter-spacing: 0; color: var(--muted); opacity: .8; }
+  input[type="text"], input[type="tel"], input[type="email"] {
+    width: 100%; appearance: none; background: var(--bg-3); border: 1px solid rgba(243, 237, 224, .14); border-radius: 10px;
+    color: var(--fg); font: 500 18px/1.3 var(--body); padding: 14px 14px; min-height: 52px;
+  }
+  input::placeholder { color: rgba(169, 159, 139, .6); }
+  input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(212, 175, 55, .18); }
+  .seg { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .seg label { margin: 0; }
+  .seg input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .seg span {
+    display: flex; align-items: center; justify-content: center; min-height: 52px; border-radius: 10px;
+    background: var(--bg-3); border: 1px solid rgba(243, 237, 224, .14); font: 600 20px/1 var(--body); color: var(--fg); cursor: pointer;
+    font-variant-numeric: tabular-nums;
+  }
+  .seg input:checked + span { background: var(--gold); color: #1a1405; border-color: var(--gold); }
+  .seg input:focus-visible + span { box-shadow: 0 0 0 3px rgba(212, 175, 55, .35); }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .btn {
+    appearance: none; border: 0; border-radius: 12px; min-height: 56px; width: 100%; cursor: pointer;
+    background: linear-gradient(180deg, var(--gold-2), var(--gold)); color: #1a1405;
+    font: 700 18px/1 var(--body); letter-spacing: .02em; margin-top: 4px;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .btn:disabled { opacity: .7; cursor: progress; }
+  .btn:focus-visible { outline: 3px solid var(--gold-2); outline-offset: 3px; }
+  .spin { width: 18px; height: 18px; border-radius: 50%; border: 2px solid rgba(26, 20, 5, .3); border-top-color: #1a1405; animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spin { animation: none; } }
+  .error { display: none; background: rgba(239, 108, 87, .12); border: 1px solid rgba(239, 108, 87, .4); color: #ffb1a3; border-radius: 10px; padding: 12px 14px; font-size: 15px; }
+  .error.show { display: block; }
+  .closed { display: none; border: 1px solid var(--line); border-radius: 10px; padding: 14px; color: var(--fg); background: var(--bg-3); }
+  .closed.show { display: block; }
+  .fine { color: var(--muted); font-size: 14px; margin: 0; text-align: center; }
+  footer { color: var(--muted); font-size: 13px; text-align: center; padding-top: 8px; border-top: 1px solid rgba(243, 237, 224, .08); }
+  footer a { color: var(--gold); text-decoration: none; }
+  footer a:hover, footer a:focus-visible { text-decoration: underline; }
+  [hidden] { display: none !important; }
+  @media (min-width: 600px) {
+    body { font-size: 18px; }
+    .card { padding: 28px 28px 26px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="top">
+    <div class="wordmark" aria-label="Live K">Live K</div>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" id="lang-en" aria-pressed="true">EN</button>
+      <button type="button" id="lang-zh" aria-pressed="false">中文</button>
+    </div>
+  </div>
+
+  <section class="hero" aria-labelledby="title">
+    <canvas id="rhythm" aria-hidden="true"></canvas>
+    <p class="eyebrow" data-i18n="eyebrow">Baltimore · Opening Night</p>
+    <h1 id="title" data-i18n="title">Grand Opening</h1>
+    <p class="lede" data-i18n="lede">You're invited to the first night of Live K Baltimore.</p>
+  </section>
+
+  <dl class="when">
+    <dt data-i18n="when">When</dt>
+    <dd><div class="big" id="date">Friday, November 13, 2026<small id="time">7:00 PM</small></div></dd>
+    <dt data-i18n="where">Where</dt>
+    <dd>
+      <div class="big" id="venue" style="font-size:22px">Live K Karaoke Bar · Rye Street Market</div>
+      <div class="sub" id="address">301 Mission Blvd, Suite 1102, Baltimore, MD 21230</div>
+      <span class="entrance" id="entrance">Main entrance on Rye Street</span>
+    </dd>
+  </dl>
+  <p class="going" id="going" hidden></p>
+
+  <section class="card" aria-labelledby="rsvp-title">
+    <h2 id="rsvp-title" data-i18n="rsvp">RSVP</h2>
+    <p class="hint" data-i18n="hint">Tell us you're coming and your group goes on the door list.</p>
+
+    <div class="closed" id="closed" data-i18n="closed">RSVPs are closed for this event. Come by anyway and give your name at the door.</div>
+
+    <form id="form" novalidate>
+      <div>
+        <label for="name" data-i18n="name">Full name</label>
+        <input type="text" id="name" name="name" autocomplete="name" autocapitalize="words" maxlength="80" required placeholder="">
+      </div>
+      <div>
+        <label for="phone" data-i18n="phone">Mobile number</label>
+        <input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" maxlength="24" required placeholder="(410) 555-0123">
+      </div>
+      <div>
+        <label for="email"><span data-i18n="email">Email</span> <span class="opt" data-i18n="optional">(optional)</span></label>
+        <input type="email" id="email" name="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="">
+      </div>
+      <div>
+        <label id="party-label" data-i18n="party">How many in your group, including you?</label>
+        <div class="seg" role="radiogroup" aria-labelledby="party-label" id="party">
+          <label><input type="radio" name="party" value="1" checked><span>1</span></label>
+          <label><input type="radio" name="party" value="2"><span>2</span></label>
+          <label><input type="radio" name="party" value="3"><span>3</span></label>
+          <label><input type="radio" name="party" value="4"><span>4</span></label>
+        </div>
+      </div>
+      <div class="hp" aria-hidden="true"><label for="company">Company</label><input type="text" id="company" name="company" tabindex="-1" autocomplete="off"></div>
+      <div class="error" id="error" role="alert"></div>
+      <button class="btn" type="submit" id="submit"><span id="submit-label" data-i18n="submit">Count me in</span></button>
+      <p class="fine" data-i18n="fine">At the door, show the code on your phone — or just give your name.</p>
+    </form>
+  </section>
+
+  <footer>
+    <span data-i18n="footer">Live K Karaoke Bar · Baltimore</span> · <a id="maps" href="#" target="_blank" rel="noopener" data-i18n="directions">Directions</a>
+  </footer>
+</div>
+
+<script src="lk.js"></script>
+<script>
+(function () {
+  const I18N = {
+    en: {
+      eyebrow: 'Baltimore · Opening Night', title: 'Grand Opening', lede: "You're invited to the first night of Live K Baltimore.",
+      when: 'When', where: 'Where', rsvp: 'RSVP', hint: "Tell us you're coming and your group goes on the door list.",
+      closed: 'RSVPs are closed for this event. Come by anyway and give your name at the door.',
+      name: 'Full name', phone: 'Mobile number', email: 'Email', optional: '(optional)',
+      party: 'How many in your group, including you?', submit: 'Count me in', sending: 'One moment…',
+      fine: 'At the door, show the code on your phone — or just give your name.',
+      footer: 'Live K Karaoke Bar · Baltimore', directions: 'Directions',
+      going: (n) => '<b>' + n + '</b> people are coming so far.',
+      entrance: 'Main entrance on Rye Street',
+      err: {
+        bad_name: 'Please enter your name.',
+        bad_phone: 'Please enter a valid mobile number.',
+        bad_email: 'That email address doesn’t look right.',
+        bad_party: 'Group size must be between 1 and 4.',
+        rsvp_closed: 'RSVPs are closed. Come by anyway and give your name at the door.',
+        full: 'We’re at capacity for RSVPs. Come by anyway and we’ll do our best at the door.',
+        too_many: 'Too many sign-ups from this network. Please try again in a little while.',
+        network: 'Can’t reach the server. Check your connection and try again.',
+        other: 'Something went wrong. Please try again.'
+      }
+    },
+    zh: {
+      eyebrow: '巴尔的摩 · 开业之夜', title: '盛大开业', lede: '诚邀您参加 Live K Baltimore 的开业首夜。',
+      when: '时间', where: '地点', rsvp: '报名', hint: '告诉我们你会来，你们一组就会进入门口名单。',
+      closed: '本场活动报名已截止。欢迎直接到场，在门口报名字即可。',
+      name: '姓名', phone: '手机号', email: '邮箱', optional: '（选填）',
+      party: '你们一共几位（含本人）？', submit: '我要参加', sending: '请稍候…',
+      fine: '到场时出示手机上的码，或直接报名字即可。',
+      footer: 'Live K Karaoke Bar · 巴尔的摩', directions: '导航',
+      going: (n) => '已有 <b>' + n + '</b> 人报名。',
+      entrance: '正门在 Rye Street',
+      err: {
+        bad_name: '请填写姓名。',
+        bad_phone: '请填写有效的手机号。',
+        bad_email: '邮箱格式不正确。',
+        bad_party: '人数需在 1 到 4 之间。',
+        rsvp_closed: '报名已截止。欢迎直接到场，在门口报名字。',
+        full: '报名名额已满。欢迎直接到场，我们会尽量安排。',
+        too_many: '同一网络报名次数过多，请稍后再试。',
+        network: '连不上服务器，请检查网络后重试。',
+        other: '出了点问题，请重试。'
+      }
+    }
+  };
+
+  let lang = LK.detectLang();
+  let event = null;
+  const $ = (id) => document.getElementById(id);
+
+  function applyLang() {
+    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+    const t = I18N[lang];
+    document.querySelectorAll('[data-i18n]').forEach((el) => {
+      const k = el.getAttribute('data-i18n');
+      if (typeof t[k] === 'string') el.textContent = t[k];
+    });
+    $('lang-en').setAttribute('aria-pressed', lang === 'en');
+    $('lang-zh').setAttribute('aria-pressed', lang === 'zh');
+    $('name').placeholder = lang === 'zh' ? '例如：王小明' : 'e.g. Jordan Lee';
+    $('email').placeholder = lang === 'zh' ? '用于接收活动提醒' : 'for event updates';
+    renderEvent();
+  }
+
+  function renderEvent() {
+    if (!event) return;
+    const t = I18N[lang];
+    $('date').firstChild.nodeValue = LK.fmtDate(event.starts_at, lang);
+    $('time').textContent = LK.fmtTime(event.starts_at, lang);
+    $('venue').textContent = event.venue || '';
+    $('address').textContent = event.address || '';
+    $('entrance').textContent = t.entrance;
+    $('entrance').hidden = !event.entrance_note;
+    const going = $('going');
+    if (event.going >= 10) { going.innerHTML = t.going(event.going); going.hidden = false; } else { going.hidden = true; }
+    const closed = !event.rsvp_open;
+    $('closed').classList.toggle('show', closed);
+    $('form').hidden = closed;
+  }
+
+  function showError(code) {
+    const t = I18N[lang].err;
+    const box = $('error');
+    box.textContent = t[code] || t.other;
+    box.classList.add('show');
+    box.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+
+  $('lang-en').addEventListener('click', () => { lang = 'en'; LK.saveLang(lang); applyLang(); });
+  $('lang-zh').addEventListener('click', () => { lang = 'zh'; LK.saveLang(lang); applyLang(); });
+  $('maps').href = LK.mapsUrl();
+
+  $('form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    $('error').classList.remove('show');
+    const name = $('name').value.trim();
+    const phone = $('phone').value.trim();
+    const email = $('email').value.trim();
+    const party = parseInt((document.querySelector('input[name="party"]:checked') || {}).value || '1', 10);
+    if (!name) { showError('bad_name'); $('name').focus(); return; }
+    if (phone.replace(/\D/g, '').length < 7) { showError('bad_phone'); $('phone').focus(); return; }
+    if ($('company').value) { location.replace('ticket.html'); return; } // honeypot: bots only
+
+    const btn = $('submit');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spin"></span><span>' + I18N[lang].sending + '</span>';
+    try {
+      const res = await LK.rpc('evt_rsvp', { p_event: LK.CONFIG.eventId, p_name: name, p_phone: phone, p_email: email, p_party: party });
+      const id = res && res.ticket && res.ticket.id;
+      if (!id) throw new Error('other');
+      location.replace('ticket.html?t=' + encodeURIComponent(id) + (res.existing ? '&updated=1' : '&new=1') + '&lang=' + lang);
+    } catch (err) {
+      showError(err.message);
+      btn.disabled = false;
+      btn.innerHTML = '<span id="submit-label">' + I18N[lang].submit + '</span>';
+    }
+  });
+
+  // flowing "rhythm" lines behind the headline (brand motif), drawn once, cheap
+  function drawRhythm() {
+    const c = $('rhythm');
+    const box = c.parentElement.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    c.width = Math.floor(box.width * dpr); c.height = Math.floor(box.height * dpr);
+    const ctx = c.getContext('2d');
+    ctx.scale(dpr, dpr);
+    const W = box.width, H = box.height;
+    ctx.clearRect(0, 0, W, H);
+    for (let i = 0; i < 7; i++) {
+      const y0 = H * (0.25 + i * 0.09);
+      const amp = 10 + i * 4;
+      ctx.beginPath();
+      for (let x = 0; x <= W; x += 6) {
+        const y = y0 + Math.sin((x / W) * Math.PI * 2.2 + i * 0.9) * amp + Math.sin((x / W) * Math.PI * 7 + i) * 3;
+        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      const g = ctx.createLinearGradient(0, 0, W, 0);
+      g.addColorStop(0, 'rgba(212,175,55,0)');
+      g.addColorStop(0.35, 'rgba(212,175,55,' + (0.22 - i * 0.02) + ')');
+      g.addColorStop(0.7, 'rgba(243,217,122,' + (0.18 - i * 0.02) + ')');
+      g.addColorStop(1, 'rgba(212,175,55,0)');
+      ctx.strokeStyle = g; ctx.lineWidth = 1; ctx.stroke();
+    }
+  }
+  drawRhythm();
+  window.addEventListener('resize', drawRhythm);
+
+  applyLang();
+  LK.rpc('evt_event_info', { p_event: LK.CONFIG.eventId }).then((ev) => { event = ev; renderEvent(); }).catch(() => { /* static copy already on the page */ });
+})();
+</script>
+</body>
+</html>
