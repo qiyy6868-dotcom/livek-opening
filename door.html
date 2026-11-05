@@ -83,16 +83,28 @@
          background: linear-gradient(180deg, rgba(11,10,8,0) 0%, rgba(11,10,8,.96) 30%); pointer-events: none; }
   .fab .tb { pointer-events: auto; min-height: 58px; font-size: 17px; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,.45); }
   .fab .tb:not(.gold) { background: var(--bg-4); }
-  .row { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; align-items: center; min-height: var(--row); padding-block: 10px; border-bottom: 1px solid var(--line); cursor: pointer; }
-  .row:active { background: var(--bg-2); }
+  /* a row: name + meta on the left, one-tap check-in on the right; swipe right reveals the green strip and checks in */
+  .row { position: relative; overflow: hidden; border-bottom: 1px solid var(--line); cursor: pointer; touch-action: pan-y; }
+  .row .swipe-bg { position: absolute; inset: 0; background: var(--ok-deep); color: #fff; display: flex; align-items: center; padding-left: 18px; font-weight: 800; font-size: 17px; opacity: 0; }
+  .row.swiping .swipe-bg { opacity: 1; }
+  .row.will .swipe-bg { background: var(--ok); color: #06281a; }
+  .row-in { position: relative; background: var(--bg); display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; align-items: center; min-height: var(--row); padding-block: 10px;
+            transform: translateX(var(--dx, 0px)); transition: transform .18s ease; }
+  .row.swiping .row-in { transition: none; }
+  .row-in:active { background: var(--bg-2); }
   .row .nm { font-size: 20px; font-weight: 700; letter-spacing: -.01em; overflow-wrap: anywhere; min-width: 0; line-height: 1.2; }
   .row .meta { grid-column: 1; font-size: 13px; color: var(--muted); display: flex; gap: 10px; flex-wrap: wrap; font-variant-numeric: tabular-nums; }
   .row .meta .code { font-weight: 700; letter-spacing: .12em; color: var(--gold-2); }
   .row .right { grid-column: 2; grid-row: 1 / span 2; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .inbtn { appearance: none; border: 0; border-radius: 12px; min-height: 48px; padding: 0 14px; background: linear-gradient(180deg, #4de08c, var(--ok)); color: #06281a; font-size: 15px; font-weight: 800; white-space: nowrap; font-variant-numeric: tabular-nums; box-shadow: 0 4px 14px rgba(53,200,119,.25); }
+  .inbtn:active { transform: scale(.97); }
+  .inbtn:disabled { opacity: .55; }
   .pill { font-size: 13px; font-weight: 800; padding: 6px 10px; border-radius: 999px; background: var(--bg-3); color: var(--fg); border: 1px solid var(--line); white-space: nowrap; font-variant-numeric: tabular-nums; }
   .pill.arrived { background: rgba(53,200,119,.16); color: #7fe8ad; border-color: rgba(53,200,119,.45); }
   .row.arrived .nm { color: var(--muted); }
   .row.arrived .nm::after { content: ' ✓'; color: var(--ok); }
+  .row.flash .row-in { animation: rowflash 1.2s ease; }
+  @keyframes rowflash { 0% { background: rgba(53,200,119,.35); } 100% { background: var(--bg); } }
   .empty { padding: 40px 0; text-align: center; color: var(--muted); }
   .empty b { color: var(--fg); display: block; font-size: 18px; margin-bottom: 6px; }
   .empty button { margin-top: 14px; }
@@ -136,12 +148,31 @@
   .scan-top { position: relative; z-index: 2; padding: max(16px, env(safe-area-inset-top, 0px)) 16px 0; display: flex; justify-content: space-between; align-items: center; color: #fff; font-weight: 700; }
   .scan-bottom { position: absolute; z-index: 2; left: 0; right: 0; bottom: 0; padding: 16px 16px max(20px, env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 10px; align-items: center; color: #fff; }
   .scan-bottom .hint { font-size: 16px; font-weight: 600; text-shadow: 0 1px 4px #000; }
+  /* result card shown over the camera after each scan; the camera keeps running underneath */
+  .scan-result { position: absolute; z-index: 3; left: 16px; right: 16px; top: 50%; transform: translateY(-50%); border-radius: 22px; padding: 26px 20px 20px; text-align: center; color: #06281a; background: var(--ok); box-shadow: 0 20px 60px rgba(0,0,0,.6); }
+  .scan-result.already { background: var(--warn); color: #2a1d02; }
+  .scan-result.bad { background: var(--danger); color: #fff; }
+  .scan-result .sr-icon { font-size: 54px; font-weight: 900; line-height: 1; }
+  .scan-result .sr-name { font-size: 30px; font-weight: 800; letter-spacing: -.02em; margin-top: 8px; overflow-wrap: anywhere; line-height: 1.1; }
+  .scan-result .sr-sub { font-size: 18px; font-weight: 700; margin-top: 8px; opacity: .9; }
+  .scan-result .sr-actions { display: flex; gap: 10px; justify-content: center; margin-top: 18px; flex-wrap: wrap; }
+  .scan-result .tb { background: rgba(0,0,0,.18); border-color: rgba(0,0,0,.25); color: inherit; }
+  .scan-result .tb.gold { background: rgba(255,255,255,.92); color: #141210; border-color: transparent; }
+  .scan-result .bar-timer { height: 4px; border-radius: 2px; background: rgba(0,0,0,.18); margin-top: 16px; overflow: hidden; }
+  .scan-result .bar-timer i { display: block; height: 100%; width: 100%; background: rgba(0,0,0,.45); transform-origin: left; animation: shrink var(--t, 2.5s) linear forwards; }
+  @keyframes shrink { to { transform: scaleX(0); } }
+  .scan-flash { position: absolute; inset: 0; z-index: 2; background: #fff; opacity: 0; pointer-events: none; }
+  .scan-flash.on { animation: flashw .35s ease; }
+  @keyframes flashw { 0% { opacity: .7; } 100% { opacity: 0; } }
 
   /* toast */
-  #toast { position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 70; background: var(--fg); color: #141210; font-weight: 800; font-size: 16px; padding: 14px 20px; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.5); display: none; max-width: calc(100vw - 32px); text-align: center; }
-  #toast.show { display: block; }
+  #toast { position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 70; background: var(--fg); color: #141210; font-weight: 800; font-size: 16px; padding: 12px 14px 12px 20px; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.5); display: none; max-width: calc(100vw - 32px); text-align: center; align-items: center; gap: 12px; }
+  #toast.show { display: flex; }
   #toast.ok { background: var(--ok); color: #06281a; }
   #toast.err { background: var(--danger); color: #fff; }
+  #toast button { appearance: none; border: 0; border-radius: 10px; background: rgba(0,0,0,.18); color: inherit; font: 800 15px/1 inherit; padding: 10px 12px; min-height: 40px; white-space: nowrap; }
+  .banner.warn { background: rgba(240,182,74,.14); border-bottom: 1px solid rgba(240,182,74,.4); color: #ffd98a; }
+  .banner.warn b { color: #fff; }
 
   /* print list */
   #print { display: none; }
@@ -162,6 +193,7 @@
 <body>
 
 <!-- PIN gate -->
+<div class="banner warn gutter" id="inapp-gate" style="position:sticky;top:0;z-index:5" hidden><b>Camera can't be used inside WeChat.</b> Tap ··· at the top right → <b>Open in Safari</b>. · 微信里无法使用相机：点右上角 ··· → <b>在 Safari 中打开</b></div>
 <div id="gate" class="gutter">
   <div class="brand">Live K · Baltimore</div>
   <h1>Door check-in</h1>
@@ -175,6 +207,7 @@
 <!-- App -->
 <div id="app" hidden>
   <div class="bar">
+    <div class="banner warn gutter" id="inapp" hidden><b>Camera can't be used inside WeChat.</b> Tap ··· at the top right → <b>Open in Safari</b>. · 微信里无法使用相机：点右上角 ··· → <b>在 Safari 中打开</b></div>
     <div class="banner gutter" id="banner">Connection lost — showing the last list. Retrying…</div>
     <div class="bar-in gutter">
       <div class="counts">
@@ -307,12 +340,21 @@
 <!-- Scanner -->
 <div id="scan">
   <video id="video" playsinline muted autoplay></video>
-  <div class="frame"></div>
+  <div class="scan-flash" id="scan-flash"></div>
+  <div class="frame" id="scan-frame"></div>
   <div class="scan-top"><span>Scan guest QR</span><button class="tb" id="scan-close">Close</button></div>
   <div class="scan-bottom"><div class="hint" id="scan-hint">Point at the code on the guest's phone</div></div>
+  <div class="scan-result" id="scan-result" hidden>
+    <div class="sr-icon" id="sr-icon">✓</div>
+    <div class="sr-name" id="sr-name"></div>
+    <div class="sr-sub" id="sr-sub"></div>
+    <div class="sr-actions"><button class="tb" id="sr-alt">Change count</button><button class="tb gold" id="sr-next">Next guest</button></div>
+    <div class="bar-timer"><i id="sr-timer"></i></div>
+  </div>
 </div>
+<input type="file" id="scan-file" accept="image/*" capture="environment" hidden>
 
-<div id="toast" role="status"></div>
+<div id="toast" role="status"><span id="toast-text"></span><button id="toast-act" hidden>Undo</button></div>
 <div id="print"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
@@ -322,7 +364,7 @@
   const $ = (id) => document.getElementById(id);
   const EVENT = LK.CONFIG.eventId;
   const POLL_MS = 6000;
-  const S = { pin: '', by: '', list: [], stats: null, event: null, q: '', filter: 'all', current: null, count: 1, wcount: 1, online: true, lastLoad: 0, pollTimer: null, scanning: false, stream: null, raf: null };
+  const S = { pin: '', by: '', list: [], stats: null, event: null, q: '', filter: 'all', current: null, count: 1, wcount: 1, online: true, lastLoad: 0, pollTimer: null, scanning: false, stream: null, raf: null, flashId: null, swipeLock: 0, scanPaused: false, lastScan: { id: null, at: 0 } };
 
   // ---------- storage ----------
   const store = {
@@ -352,14 +394,23 @@
   function errText(e) { return ERR[e && e.message] || ('Something went wrong (' + (e && e.message) + ')'); }
 
   // ---------- toast ----------
-  let toastTimer;
-  function toast(text, kind) {
-    const t = $('toast');
-    t.textContent = text; t.className = 'show ' + (kind || '');
+  let toastTimer, toastAction = null;
+  function toast(text, kind, action) {
+    const t = $('toast'), b = $('toast-act');
+    $('toast-text').textContent = text; t.className = 'show ' + (kind || '');
+    toastAction = action || null;
+    b.hidden = !action; if (action) b.textContent = action.label || 'Undo';
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => { t.className = ''; }, kind === 'err' ? 4000 : 2200);
+    toastTimer = setTimeout(() => { t.className = ''; toastAction = null; }, kind === 'err' ? 4000 : (action ? 5000 : 2200));
   }
+  $('toast-act').addEventListener('click', () => { const a = toastAction; $('toast').className = ''; toastAction = null; clearTimeout(toastTimer); if (a) a.run(); });
   function buzz(p) { try { if (navigator.vibrate) navigator.vibrate(p || 40); } catch (e) {} }
+
+  // In-app browsers (WeChat above all) have no camera API: say so up front, and fall back to a photo of the code.
+  const UA = navigator.userAgent || '';
+  const inWeChat = /MicroMessenger/i.test(UA);
+  const hasCamera = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+  if (inWeChat) { $('inapp').hidden = false; $('inapp-gate').hidden = false; }
 
   // ---------- gate ----------
   function signOut(msg) {
@@ -411,7 +462,7 @@
     }
   }
   function setOnline(v) { S.online = v; $('live').classList.toggle('off', !v); $('banner').classList.toggle('show', !v); }
-  function startPoll() { stopPoll(); S.pollTimer = setInterval(() => { if (document.visibilityState === 'visible' && !S.scanning) load(true); }, POLL_MS); }
+  function startPoll() { stopPoll(); S.pollTimer = setInterval(() => { if (document.visibilityState === 'visible') load(true); }, POLL_MS); }
   function stopPoll() { if (S.pollTimer) clearInterval(S.pollTimer); S.pollTimer = null; }
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && S.pin) { load(true); requestWakeLock(); } });
   window.addEventListener('online', () => { if (S.pin) load(true); });
@@ -475,22 +526,73 @@
         if (letter !== lastLetter) { lastLetter = letter; const h = document.createElement('li'); h.className = 'sect'; h.textContent = letter; frag.appendChild(h); }
       }
       const li = document.createElement('li');
-      li.className = 'row' + (r.checked_in_at ? ' arrived' : '');
-      li.setAttribute('role', 'button'); li.tabIndex = 0; li.dataset.id = r.id;
+      li.className = 'row' + (r.checked_in_at ? ' arrived' : '') + (S.flashId === r.id ? ' flash' : '');
+      li.dataset.id = r.id;
       const meta = ['<span class="code">' + esc(r.code) + '</span>'];
       if (r.phone) meta.push('···' + esc(r.phone.slice(-4)));
+      if (!r.checked_in_at) meta.push('group of ' + r.party_size);
       if (r.source === 'walkin') meta.push('walk-in');
       if (r.note) meta.push(esc(r.note));
       const right = r.checked_in_at
         ? '<span class="pill arrived">' + (r.checked_in_count != null ? r.checked_in_count + ' in' : 'in') + '</span><span class="meta">' + esc(LK.fmtClock(r.checked_in_at)) + '</span>'
-        : '<span class="pill">×' + r.party_size + '</span>';
-      li.innerHTML = '<div class="nm">' + esc(r.name) + '</div><div class="meta">' + meta.join('<span>·</span>') + '</div><div class="right">' + right + '</div>';
+        : '<button type="button" class="inbtn" data-act="in" aria-label="Check in ' + esc(r.name) + '">✓ Check in ' + r.party_size + '</button>';
+      li.innerHTML = '<div class="swipe-bg">✓ Check in</div><div class="row-in" role="button" tabindex="0"><div class="nm">' + esc(r.name) + '</div><div class="meta">' + meta.join('<span>·</span>') + '</div><div class="right">' + right + '</div></div>';
       frag.appendChild(li);
     });
     ul.innerHTML = ''; ul.appendChild(frag);
+    S.flashId = null;
   }
-  $('list').addEventListener('click', (e) => { const li = e.target.closest('.row'); if (li) openGuest(li.dataset.id); });
-  $('list').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { const li = e.target.closest('.row'); if (li) { e.preventDefault(); openGuest(li.dataset.id); } } });
+  // tap the green button = check in the whole group at once; tap the name = details (count, undo, edit)
+  $('list').addEventListener('click', (e) => {
+    if (S.swipeLock && Date.now() < S.swipeLock) return;
+    const li = e.target.closest('.row'); if (!li) return;
+    if (e.target.closest('[data-act="in"]')) { quickCheckin(li.dataset.id, e.target.closest('[data-act="in"]')); return; }
+    openGuest(li.dataset.id);
+  });
+  $('list').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { const li = e.target.closest('.row'); if (li && !e.target.closest('button')) { e.preventDefault(); openGuest(li.dataset.id); } } });
+
+  async function quickCheckin(id, btn) {
+    const r = S.list.find((x) => x.id === id); if (!r) return;
+    if (r.checked_in_at) { toast('Already checked in · ' + LK.fmtClock(r.checked_in_at)); return; }
+    if (btn) { btn.disabled = true; btn.textContent = '…'; }
+    try {
+      const res = await door('evt_door_checkin', { p_id: id, p_count: r.party_size, p_by: S.by });
+      S.flashId = id; patchRow(res.rsvp, res.stats); buzz([40, 40, 40]);
+      toast('✓ ' + r.name + ' · ' + r.party_size + ' in', 'ok', { label: 'Undo', run: () => undoCheckin(id) });
+    } catch (e) { toast(errText(e), 'err'); renderList(); }
+  }
+  async function undoCheckin(id) {
+    const r = S.list.find((x) => x.id === id); if (!r) return;
+    try { const res = await door('evt_door_undo', { p_id: id }); patchRow(res.rsvp, res.stats); toast('Check-in undone for ' + r.name); }
+    catch (e) { toast(errText(e), 'err'); }
+  }
+
+  // swipe a pending row to the right to check the group in (vertical scrolling stays untouched)
+  (function swipe() {
+    const ul = $('list'); let sw = null;
+    const reset = (li) => { li.classList.remove('swiping', 'will'); li.style.removeProperty('--dx'); };
+    ul.addEventListener('touchstart', (e) => {
+      const li = e.target.closest('.row'); if (!li || li.classList.contains('arrived') || e.target.closest('button')) { sw = null; return; }
+      const t = e.touches[0]; sw = { li, x0: t.clientX, y0: t.clientY, dx: 0, dir: null };
+    }, { passive: true });
+    ul.addEventListener('touchmove', (e) => {
+      if (!sw) return;
+      const t = e.touches[0]; const dx = t.clientX - sw.x0, dy = t.clientY - sw.y0;
+      if (!sw.dir) { if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return; sw.dir = Math.abs(dx) > Math.abs(dy) * 1.3 && dx > 0 ? 'h' : 'v'; if (sw.dir === 'h') sw.li.classList.add('swiping'); }
+      if (sw.dir !== 'h') return;
+      sw.dx = Math.max(0, Math.min(dx, 170)); sw.li.style.setProperty('--dx', sw.dx + 'px'); sw.li.classList.toggle('will', sw.dx >= 96);
+    }, { passive: true });
+    const end = () => {
+      if (!sw) return;
+      const { li, dx, dir } = sw; sw = null;
+      if (dir === 'h') {
+        S.swipeLock = Date.now() + 500;
+        if (dx >= 96) { li.style.setProperty('--dx', '110%'); li.classList.remove('swiping'); setTimeout(() => quickCheckin(li.dataset.id, li.querySelector('[data-act="in"]')), 120); }
+        else reset(li);
+      }
+    };
+    ul.addEventListener('touchend', end); ul.addEventListener('touchcancel', end);
+  })();
   $('q').addEventListener('input', () => { S.q = $('q').value; $('q-clear').hidden = !S.q; renderList(); });
   $('q').addEventListener('keydown', (e) => { if (e.key === 'Enter') { const rows = visibleRows(); if (rows.length === 1) openGuest(rows[0].id); $('q').blur(); } });
   $('q-clear').addEventListener('click', () => { $('q').value = ''; S.q = ''; $('q-clear').hidden = true; renderList(); $('q').focus(); });
@@ -660,54 +762,159 @@
   });
 
   // ---------- scanner ----------
+  // Live camera + QR decoding. Native BarcodeDetector where the browser has it, jsQR on a centre crop of the frame otherwise.
+  // A recognised guest is checked in on the spot (whole group); the camera keeps running for the next guest.
   const video = $('video');
-  let canvas = null, ctx = null;
-  async function startScan() {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { toast('Camera not available in this browser', 'err'); return; }
-    $('scan').classList.add('show'); S.scanning = true; $('scan-hint').textContent = 'Point at the code on the guest’s phone';
+  let canvas = null, ctx = null, detector = null, detectorTried = false, scanSeq = 0, resultTimer = null;
+  async function getDetector() {
+    if (detectorTried) return detector;
+    detectorTried = true;
     try {
-      S.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
-      video.srcObject = S.stream; await video.play();
+      if ('BarcodeDetector' in window) {
+        const fmts = await window.BarcodeDetector.getSupportedFormats();
+        if (fmts.includes('qr_code')) detector = new window.BarcodeDetector({ formats: ['qr_code'] });
+      }
+    } catch (e) { detector = null; }
+    return detector;
+  }
+  async function startScan() {
+    if (!hasCamera) { $('scan-file').value = ''; $('scan-file').click(); return; } // WeChat & co: take a photo of the code instead
+    $('scan').classList.add('show'); S.scanning = true; S.scanPaused = false; hideResult();
+    $('scan-hint').textContent = 'Point at the code on the guest’s phone';
+    try {
+      let stream;
+      try { stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false }); }
+      catch (e1) { stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false }); }
+      if (!S.scanning) { stream.getTracks().forEach((t) => t.stop()); return; }
+      S.stream = stream; video.srcObject = stream;
+      try { await video.play(); } catch (e) {}
       if (!canvas) { canvas = document.createElement('canvas'); ctx = canvas.getContext('2d', { willReadFrequently: true }); }
-      tick();
+      await getDetector();
+      scanLoop(++scanSeq);
     } catch (e) {
-      stopScan(); toast('Camera blocked. Allow camera access for this site, or search by name.', 'err');
+      stopScan();
+      toast('Camera blocked. Allow camera for this site (aA → Website Settings), or take a photo of the code.', 'err', { label: 'Photo', run: () => { $('scan-file').value = ''; $('scan-file').click(); } });
     }
   }
   function stopScan() {
-    S.scanning = false; $('scan').classList.remove('show');
-    if (S.raf) cancelAnimationFrame(S.raf); S.raf = null;
+    S.scanning = false; S.scanPaused = false; scanSeq++; hideResult();
+    $('scan').classList.remove('show');
     if (S.stream) { S.stream.getTracks().forEach((t) => t.stop()); S.stream = null; }
     video.srcObject = null;
   }
-  function tick() {
-    if (!S.scanning) return;
-    if (video.readyState === video.HAVE_ENOUGH_DATA && window.jsQR) {
-      const scale = Math.min(1, 640 / video.videoWidth);
-      canvas.width = Math.floor(video.videoWidth * scale); canvas.height = Math.floor(video.videoHeight * scale);
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const res = window.jsQR(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' });
-      if (res && res.data) { onScanned(res.data); return; }
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  async function scanLoop(seq) {
+    let n = 0;
+    while (S.scanning && seq === scanSeq) {
+      if (S.scanPaused || video.readyState < 2 || !video.videoWidth) { await sleep(120); continue; }
+      n++;
+      let text = null;
+      try { text = await decodeFrame(n); } catch (e) { text = null; }
+      if (!S.scanning || seq !== scanSeq) return;
+      if (text) { await onScanned(text); continue; }
+      await sleep(detector ? 90 : 40);
     }
-    S.raf = requestAnimationFrame(tick);
   }
-  function onScanned(text) {
+  async function decodeFrame(n) {
+    if (detector) {
+      try { const codes = await detector.detect(video); if (codes && codes.length && codes[0].rawValue) return codes[0].rawValue; return null; }
+      catch (e) { detector = null; } // fall through to jsQR
+    }
+    if (!window.jsQR) return null;
+    const vw = video.videoWidth, vh = video.videoHeight;
+    // mostly the centre square (where the frame is), every 4th frame the whole picture
+    const whole = n % 4 === 0;
+    const side = whole ? 0 : Math.floor(Math.min(vw, vh) * 0.82);
+    const sx = whole ? 0 : Math.floor((vw - side) / 2), sy = whole ? 0 : Math.floor((vh - side) / 2);
+    const srcW = whole ? vw : side, srcH = whole ? vh : side;
+    const scale = Math.min(1, 800 / Math.max(srcW, srcH));
+    canvas.width = Math.max(1, Math.floor(srcW * scale)); canvas.height = Math.max(1, Math.floor(srcH * scale));
+    ctx.drawImage(video, sx, sy, srcW, srcH, 0, 0, canvas.width, canvas.height);
+    const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const res = window.jsQR(img.data, img.width, img.height, { inversionAttempts: n % 2 ? 'dontInvert' : 'attemptBoth' });
+    return res && res.data ? res.data : null;
+  }
+  function parseScan(text) {
+    const t = String(text || '').trim();
     let id = null, code = null;
-    try { const u = new URL(text); id = u.searchParams.get('t'); } catch (e) {}
-    if (!id && /^[0-9a-f-]{36}$/i.test(text.trim())) id = text.trim();
-    if (!id && /^[A-Z0-9]{4}$/i.test(text.trim())) code = text.trim().toUpperCase();
-    const r = S.list.find((x) => (id && x.id === id) || (code && x.code === code));
-    if (!r) {
-      $('scan-hint').textContent = 'Not on the list — try again, or add a walk-in';
-      S.raf = requestAnimationFrame(() => setTimeout(tick, 900));
+    try { const u = new URL(t); id = u.searchParams.get('t'); } catch (e) {}
+    if (!id && /^[0-9a-f-]{36}$/i.test(t)) id = t;
+    if (!id && /^[A-Z0-9]{4}$/i.test(t)) code = t.toUpperCase();
+    return { id, code };
+  }
+  async function findGuest(text) {
+    const { id, code } = parseScan(text);
+    if (!id && !code) return { bad: true };
+    const pick = () => S.list.find((x) => (id && x.id === id) || (code && x.code === code));
+    let r = pick();
+    if (!r) { await load(true); r = pick(); } // maybe they RSVP'd a moment ago
+    return { r, id, code };
+  }
+  async function onScanned(text) {
+    if (S.lastScan.id === text && Date.now() - S.lastScan.at < 6000) return; // same code still in view
+    S.lastScan = { id: text, at: Date.now() };
+    const { r, bad } = await findGuest(text);
+    if (!S.scanning) return;
+    flashFrame();
+    if (!r) { buzz([30, 60, 30]); showResult('bad', bad ? 'Not a Live K code' : 'Not on the list', 'Add them as a walk-in, or search by name', { alt: 'Walk-in', altRun: () => { stopScan(); openWalkin(''); } }, 2600); return; }
+    if (r.checked_in_at) {
       buzz([30, 60, 30]);
+      showResult('already', r.name, 'Already checked in · ' + LK.fmtClock(r.checked_in_at) + (r.checked_in_count != null ? ' · ' + r.checked_in_count + ' people' : ''), { alt: 'Open', altRun: () => { stopScan(); openGuest(r.id); } }, 2600);
       return;
     }
-    stopScan(); buzz(40); openGuest(r.id);
+    S.scanPaused = true;
+    showResult('ok', r.name, 'Checking in…', null, 0);
+    try {
+      const res = await door('evt_door_checkin', { p_id: r.id, p_count: r.party_size, p_by: S.by });
+      S.flashId = r.id; patchRow(res.rsvp, res.stats); buzz([40, 40, 40]);
+      if (!S.scanning) return;
+      showResult('ok', r.name, '✓ Checked in · ' + r.party_size + (r.party_size === 1 ? ' person' : ' people'), { alt: 'Change count', altRun: () => { stopScan(); openGuest(r.id); } }, 2500);
+    } catch (e) {
+      if (!S.scanning) return;
+      showResult('bad', r.name, errText(e), { alt: 'Open', altRun: () => { stopScan(); openGuest(r.id); } }, 3500);
+    }
   }
+  function flashFrame() { const f = $('scan-flash'); f.classList.remove('on'); void f.offsetWidth; f.classList.add('on'); }
+  function showResult(kind, name, sub, opts, ms) {
+    S.scanPaused = true;
+    clearTimeout(resultTimer);
+    const box = $('scan-result');
+    box.className = 'scan-result ' + kind; box.hidden = false;
+    $('sr-icon').textContent = kind === 'ok' ? '✓' : kind === 'already' ? '✓' : '✕';
+    $('sr-name').textContent = name; $('sr-sub').textContent = sub;
+    const alt = $('sr-alt'); alt.hidden = !(opts && opts.alt); if (opts && opts.alt) { alt.textContent = opts.alt; alt.onclick = opts.altRun; }
+    $('sr-next').hidden = !ms;
+    const t = $('sr-timer'); t.style.setProperty('--t', (ms || 1000) + 'ms'); t.style.animation = 'none'; void t.offsetWidth; t.style.animation = ''; t.parentElement.hidden = !ms;
+    if (ms) resultTimer = setTimeout(hideResult, ms);
+  }
+  function hideResult() { clearTimeout(resultTimer); $('scan-result').hidden = true; S.scanPaused = false; }
+  $('sr-next').addEventListener('click', hideResult);
   $('b-scan').addEventListener('click', startScan);
   $('scan-close').addEventListener('click', stopScan);
+  // photo fallback: decode a picture taken with the phone's camera app
+  $('scan-file').addEventListener('change', async () => {
+    const f = $('scan-file').files && $('scan-file').files[0]; if (!f) return;
+    try {
+      const bmp = await (window.createImageBitmap ? createImageBitmap(f) : loadImage(f));
+      if (!canvas) { canvas = document.createElement('canvas'); ctx = canvas.getContext('2d', { willReadFrequently: true }); }
+      let text = null;
+      for (const max of [1000, 1600]) {
+        const scale = Math.min(1, max / Math.max(bmp.width, bmp.height));
+        canvas.width = Math.floor(bmp.width * scale); canvas.height = Math.floor(bmp.height * scale);
+        ctx.drawImage(bmp, 0, 0, canvas.width, canvas.height);
+        const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const res = window.jsQR ? window.jsQR(img.data, img.width, img.height, { inversionAttempts: 'attemptBoth' }) : null;
+        if (res && res.data) { text = res.data; break; }
+      }
+      if (!text) { toast('Couldn’t read the code — hold the phone closer and try again, or search by name.', 'err'); return; }
+      const { r, bad } = await findGuest(text);
+      if (!r) { toast(bad ? 'Not a Live K code' : 'Not on the list — add a walk-in', 'err'); return; }
+      if (r.checked_in_at) { openGuest(r.id); return; }
+      await quickCheckin(r.id, null);
+    } catch (e) { toast('Couldn’t read that photo. Try again.', 'err'); }
+    finally { $('scan-file').value = ''; }
+  });
+  function loadImage(file) { return new Promise((res, rej) => { const img = new Image(); img.onload = () => res(img); img.onerror = rej; img.src = URL.createObjectURL(file); }); }
 
   // ---------- wake lock ----------
   let wake = null;
